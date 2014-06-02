@@ -59,11 +59,20 @@ function the_advanced_excerpt( $args = '', $get = false ) {
 	}
 
 	// Set temporary options
-	$advanced_excerpt->options = wp_parse_args( $args, $advanced_excerpt->default_options );
+	$advanced_excerpt->options = wp_parse_args( $args, $advanced_excerpt->options );
+
+	// Ensure our filter is hooked, regardless of the page type
+	if ( ! has_filter( 'get_the_excerpt', array( $advanced_excerpt, 'filter' ) ) ) {
+		remove_all_filters( 'get_the_excerpt' );
+		add_filter( 'get_the_excerpt', array( $advanced_excerpt, 'filter' ) );
+	}
 
 	if ( $get ) {
 		return get_the_excerpt();
 	} else {
 		the_excerpt();
 	}
+
+	// Reset the options back to their original state
+	$advanced_excerpt->load_options();
 }
