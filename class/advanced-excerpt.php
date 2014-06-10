@@ -26,6 +26,7 @@ class Advanced_Excerpt {
 
 	public $options_basic_tags; // Basic HTML tags (determines which tags are in the checklist by default)
 	public $options_all_tags; // Almost all HTML tags (extra options)
+	public $filter_type; // Determines wether we're filtering the_content or the_excerpt at any given time
 
 	function __construct( $plugin_file_path ) {
 		$this->load_options();
@@ -90,11 +91,12 @@ class Advanced_Excerpt {
 
 		if ( 1 == $this->options['the_excerpt'] ) {
 			remove_all_filters( 'get_the_excerpt' );
-			add_filter( 'get_the_excerpt', array( $this, 'filter' ) );
+			remove_all_filters( 'the_excerpt' );
+			add_filter( 'get_the_excerpt', array( $this, 'filter_excerpt' ) );
 		}
 
 		if ( 1 == $this->options['the_content'] ) {
-			add_filter( 'the_content', array( $this, 'filter' ) );
+			add_filter( 'the_content', array( $this, 'filter_content' ) );
 		}
 	}
 
@@ -203,53 +205,59 @@ class Advanced_Excerpt {
 		return $links;
 	}
 
-	function filter( $text ) {
-		global $post;
-		extract( wp_parse_args( $this->options, $this->default_options ), EXTR_SKIP );
-		$original_excerpt = $text;
+	function filter_content( $content ) {
+		$this->filter_type = 'content';
+		return $this->filter( $content );
+	}
 
-		// Avoid custom excerpts
-		if ( !empty( $text ) && !$no_custom ) {
-			return $text;
+	function filter_excerpt( $content ) {
+		$this->filter_type = 'excerpt';
+		return $this->filter( $content );
+	}
+
+	function filter( $content ) {
+		extract( wp_parse_args( $this->options, $this->default_options ), EXTR_SKIP );
+
+		if ( true === apply_filters( 'advanced_excerpt_skip_excerpt_filtering', false ) ) {
+			return $content;
 		}
 
-		// Get the full content and filter it
-		$text = $post->post_content;
-		if ( 1 == $no_shortcode ) {
-			$text = strip_shortcodes( $text );
+		global $post;
+		if ( $the_content_no_break && false !== strpos( $post->post_content, '<!--more-->' ) && 'content' == $this->filter_type ) {
+			return $content;
+		}
+
+		// Avoid custom excerpts
+		if ( !empty( $content ) && !$no_custom ) {
+			return $content;
 		}
 
 		// prevent recursion on 'the_content' hook
 		$content_has_filter = false;
-		if ( has_filter( 'the_content', array( $this, 'filter' ) ) ) { 
-			remove_filter( 'the_content', array( $this, 'filter' ) ); 
+		if ( has_filter( 'the_content', array( $this, 'filter_content' ) ) ) { 
+			remove_filter( 'the_content', array( $this, 'filter_content' ) ); 
 			$content_has_filter = true;
 		}
 
+		$text = get_the_content( '' );
 		$text = apply_filters( 'the_content', $text );
 
 		// add our filter back in
 		if ( $content_has_filter ) { 
-			add_filter( 'the_content', array( $this, 'filter' ) );
-		}
-
-		if ( $the_content_no_break && false !== strpos( $text, '<!--more-->' ) ) {
-			return $original_excerpt;
+			add_filter( 'the_content', array( $this, 'filter_content' ) );
 		}
 
 		// From the default wp_trim_excerpt():
 		// Some kind of precaution against malformed CDATA in RSS feeds I suppose
 		$text = str_replace( ']]>', ']]&gt;', $text );
 
-		$original_post_content = $text;
-
-		// Determine allowed tags
 		if ( empty( $allowed_tags ) ) {
-			$allowed_tags = $this->options_all_tags;
+			$allowed_tags = array();
 		}
 
+		// the $exclude_tags args takes precedence over the $allowed_tags args (only if they're both defined)
 		if ( ! empty( $exclude_tags ) ) {
-			$allowed_tags = array_diff( $allowed_tags, $exclude_tags );
+			$allowed_tags = array_diff( $this->options_all_tags, $exclude_tags );
 		}
 
 		// Strip HTML if $allowed_tags_option is set to 'remove_all_tags_except'
@@ -259,14 +267,17 @@ class Advanced_Excerpt {
 			} else {
 				$tag_string = '';
 			}
+
 			$text = strip_tags( $text, $tag_string );
 		}
+
+		$text_before_trimming = $text;
 
 		// Create the excerpt
 		$text = $this->text_excerpt( $text, $length, $length_type, $finish );
 
 		// Add the ellipsis or link
-		if ( !apply_filters( 'advanced_excerpt_disable_add_more', false, $original_post_content, $this->options ) ) {
+		if ( !apply_filters( 'advanced_excerpt_disable_add_more', false, $text_before_trimming, $this->options ) ) {
 			$text = $this->text_add_more( $text, $ellipsis, ( $add_link ) ? $read_more : false );
 		}
 
