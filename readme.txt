@@ -1,7 +1,7 @@
 === Advanced Excerpt ===
 Contributors: bradt, aprea
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=5VPMGLLK94XJC
-Tags: excerpt, post, content, formatting
+Tags: adopt-me, excerpt, post, content, formatting
 Requires at least: 3.2
 Tested up to: 3.9
 Stable tag: 4.2.3
