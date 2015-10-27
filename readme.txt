@@ -1,5 +1,5 @@
 === Advanced Excerpt ===
-Contributors: bradt, aprea
+Contributors: aprea
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=5VPMGLLK94XJC
 Tags: adopt-me, excerpt, post, content, formatting
 Requires at least: 3.2
