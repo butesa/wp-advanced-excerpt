@@ -3,7 +3,7 @@ Contributors: fancythemes, WPKube
 Tags: post excerpt, excerpt, post, content, formatting
 Requires at least: 3.2
 Tested up to: 4.9.6
-Stable tag: 4.2.3
+Stable tag: 4.2.4
 License: GPLv3
 
 Control the appearance of WordPress post excerpts
