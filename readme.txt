@@ -96,6 +96,9 @@ However, you can [start The Loop manually](http://codex.wordpress.org/The_Loop#M
 
 == Changelog ==
 
+= 4.2.5 =
+* Fixed the "remove shortcodes from excerpt" functionality
+
 = 4.2.4 =
 * Compatibility tested for latest version of WordPress ( 4.9.6 )
 * Minor tweaks
