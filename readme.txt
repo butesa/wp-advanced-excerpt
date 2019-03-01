@@ -2,7 +2,7 @@
 Contributors: fancythemes, WPKube
 Tags: post excerpt, excerpt, post, content, formatting
 Requires at least: 3.2
-Tested up to: 5.0
+Tested up to: 5.1
 Stable tag: 4.2.5
 License: GPLv3
 
