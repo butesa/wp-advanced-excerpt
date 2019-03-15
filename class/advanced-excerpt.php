@@ -16,6 +16,7 @@ class Advanced_Excerpt {
 		'ellipsis' => '&hellip;',
 		'read_more' => 'Read the rest',
 		'add_link' => 0,
+		'link_new_tab' => 0,
 		'allowed_tags' => array(),
 		'the_excerpt' => 1,
 		'the_content' => 1,
@@ -284,7 +285,7 @@ class Advanced_Excerpt {
 
 		// Add the ellipsis or link
 		if ( !apply_filters( 'advanced_excerpt_disable_add_more', false, $text_before_trimming, $this->options ) ) {
-			$text = $this->text_add_more( $text, $ellipsis, ( $add_link ) ? $read_more : false );
+			$text = $this->text_add_more( $text, $ellipsis, ( $add_link ) ? $read_more : false, ( $link_new_tab ) ? true : false );
 		}
 
 		return apply_filters( 'advanced_excerpt_content', $text );
@@ -330,10 +331,15 @@ class Advanced_Excerpt {
 		return trim( force_balance_tags( $out ) );
 	}
 
-	public function text_add_more( $text, $ellipsis, $read_more ) {
+	public function text_add_more( $text, $ellipsis, $read_more, $link_new_tab ) {
+
 		if ( $read_more ) {
-			$link_template = apply_filters( 'advanced_excerpt_read_more_link_template', ' <a href="%1$s" class="read-more">%2$s</a>', get_permalink(), $read_more );
-			$ellipsis .= sprintf( $link_template, get_permalink(), $read_more );
+			if ( $link_new_tab ) {
+				$link_template = apply_filters( 'advanced_excerpt_read_more_link_template', ' <a href="%1$s" class="read-more" target="_blank">%2$s<span class="screen-reader-text"> &#8220;%3$s&#8221;</span></a>', get_permalink(), $read_more, get_the_title() );
+			} else {
+				$link_template = apply_filters( 'advanced_excerpt_read_more_link_template', ' <a href="%1$s" class="read-more">%2$s<span class="screen-reader-text"> &#8220;%3$s&#8221;</span></a>', get_permalink(), $read_more, get_the_title() );
+			}
+			$ellipsis .= sprintf( $link_template, get_permalink(), $read_more, get_the_title() );
 		}
 
 		$pos = strrpos( $text, '</' );	
@@ -367,7 +373,7 @@ class Advanced_Excerpt {
 		$_POST = stripslashes_deep( $_POST );
 		$this->options['length'] = (int) $_POST['length'];
 
-		$checkbox_options = array( 'no_custom', 'no_shortcode', 'add_link', 'the_excerpt', 'the_content', 'the_content_no_break' );
+		$checkbox_options = array( 'no_custom', 'no_shortcode', 'add_link', 'link_new_tab', 'the_excerpt', 'the_content', 'the_content_no_break' );
 
 		foreach ( $checkbox_options as $checkbox_option ) {
 			$this->options[$checkbox_option] = ( isset( $_POST[$checkbox_option] ) ) ? 1 : 0;
