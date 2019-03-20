@@ -96,6 +96,11 @@ However, you can [start The Loop manually](http://codex.wordpress.org/The_Loop#M
 
 == Changelog ==
 
+= 4.2.8 =
+* New - Screen reader text is now optional, can be enabled in the options
+* New - Added option to remove the "read more link" if the full post content is shown
+* New - Title can be included in the "read more link" by adding {title} to the option
+
 = 4.2.7 =
 * New - Option to open "read more" in a new tab
 * New - Added screen reader text for "read more" link
