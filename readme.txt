@@ -96,6 +96,10 @@ However, you can [start The Loop manually](http://codex.wordpress.org/The_Loop#M
 
 == Changelog ==
 
+= 4.2.9 ( May 27th, 2019) =
+* New - Filter for developers to change the read more text. The filter is advanced_excerpt_read_more_text
+* Tweak - The read more text option now accept shortcodes
+
 = 4.2.8 =
 * New - Screen reader text is now optional, can be enabled in the options
 * New - Added option to remove the "read more link" if the full post content is shown
