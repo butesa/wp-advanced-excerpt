@@ -219,6 +219,7 @@ class Advanced_Excerpt {
 	}
 
 	function filter( $content ) {
+
 		extract( wp_parse_args( $this->options, $this->default_options ), EXTR_SKIP );
 
 		if ( true === apply_filters( 'advanced_excerpt_skip_excerpt_filtering', false ) ) {
@@ -297,6 +298,7 @@ class Advanced_Excerpt {
 		}
 
 		return apply_filters( 'advanced_excerpt_content', $text );
+
 	}
 
 	function text_excerpt( $text, $length, $length_type, $finish ) {
@@ -372,7 +374,7 @@ class Advanced_Excerpt {
 			 * There was previously a problem where our 'read-more' links were being appending incorrectly into unsuitable HTML tags.
 			 * As such we're now maintaining a whitelist of HTML tags that are suitable for being appended into.
 			 */
-			$allow_tags_to_append_into = apply_filters( 'advanced_excerpt_allow_tags_to_append_into', array( 'p', 'div', 'article', 'section' ) );
+			$allow_tags_to_append_into = apply_filters( 'advanced_excerpt_allow_tags_to_append_into', array( 'p', 'article', 'section' ) );
 
 			if( !in_array( $last_tag, $allow_tags_to_append_into ) ) {
 				// After the content
