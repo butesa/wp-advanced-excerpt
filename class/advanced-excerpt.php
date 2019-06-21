@@ -92,6 +92,11 @@ class Advanced_Excerpt {
 		$page_type_matches = array_intersect( $page_types, $skip_page_types );
 		if ( !empty( $page_types ) && !empty( $page_type_matches ) ) return;
 
+		// skip woocommerce products
+		if ( in_array( 'woocommerce', $skip_page_types ) && get_post_type( get_the_ID() ) == 'product' ) {
+			return;
+		}
+
 		if ( 1 == $this->options['the_excerpt'] ) {
 			remove_all_filters( 'get_the_excerpt' );
 			remove_all_filters( 'the_excerpt' );
@@ -433,6 +438,7 @@ class Advanced_Excerpt {
 			'author'		=> __( 'Author Archive', 'advanced-excerpt' ),
 			'category'		=> __( 'Category Archive', 'advanced-excerpt' ),
 			'tag'			=> __( 'Tag Archive', 'advanced-excerpt' ),
+			'woocommerce'   => __( 'WooCommerce Products', 'advanced-excerpt' ),
 		);
 		$exclude_pages_list = apply_filters( 'advanced_excerpt_exclude_pages_list', $exclude_pages_list );
 
