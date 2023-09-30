@@ -347,6 +347,11 @@ class Advanced_Excerpt {
 		// Add the ellipsis or link
 		if ( ! apply_filters( 'advanced_excerpt_disable_add_more', false, $text_before_trimming, $this->options ) ) {
 			if ( ! $link_exclude_length || $text_length_after < $text_length_before ) {
+
+				if ($text_length_after == $text_length_before) {
+					$ellipsis = '';
+				}
+
 				$text = $this->text_add_more( $text, $ellipsis, ( $add_link ) ? $read_more : false, ( $link_new_tab ) ? true : false, ( $link_screen_reader ) ? true : false );
 			}
 		}
@@ -422,6 +427,11 @@ class Advanced_Excerpt {
 			$ellipsis .= sprintf( $link_template, get_permalink(), $read_more, $screen_reader_html );
 
 		}
+
+		if (empty($ellipsis)) {
+			return $text;
+		}
+
 
 		$pos = strrpos( $text, '</' );	
 
