@@ -91,13 +91,13 @@ class Advanced_Excerpt {
 		 *
 		 * WordPress default themes (and others) do not use the_excerpt() or get_the_excerpt()
 		 * and instead use the_content(). As such, we also need to hook into the_content().
-		 * To ensure we're not changing the content of single posts / pages we automatically exclude 'singular' page types.
+		 * To ensure we're not changing the content of single posts / pages we automatically exclude 'singular' page types for the the_content filter.
 		 */
 
         add_filter( 'wppsac_excerpt', array( $this, 'filter_content' ) );
 
 		$page_types = $this->get_current_page_types();
-		$skip_page_types = array_unique( array_merge( array( 'singular' ), $this->options['exclude_pages'] ) );
+		$skip_page_types = array_unique($this->options['exclude_pages']) ;
 		$skip_page_types = apply_filters( 'advanced_excerpt_skip_page_types', $skip_page_types ); 
 		$page_type_matches = array_intersect( $page_types, $skip_page_types );
 		if ( !empty( $page_types ) && !empty( $page_type_matches ) ) return;
@@ -123,7 +123,7 @@ class Advanced_Excerpt {
 			add_filter( 'get_the_excerpt', array( $this, 'filter_excerpt' ) );
 		}
 
-		if ( 1 == $this->options['the_content'] ) {
+		if ( 1 == $this->options['the_content'] && !in_array('singular', $page_types) ) {
 			add_filter( 'the_content', array( $this, 'filter_content' ) );
 		}
 	}
