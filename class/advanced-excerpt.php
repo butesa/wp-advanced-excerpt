@@ -34,6 +34,8 @@ class Advanced_Excerpt {
 	public $options_all_tags; // Almost all HTML tags (extra options)
 	public $filter_type; // Determines wether we're filtering the_content or the_excerpt at any given time
 
+	private ?string $postExcerptRenderCallback = null;
+
 	function __construct( $plugin_file_path ) {
 		$this->load_options();
 
@@ -75,6 +77,8 @@ class Advanced_Excerpt {
 		}
 
 		add_action( 'loop_start', array( $this, 'hook_content_filters' ) );
+
+		add_filter('block_type_metadata_settings', array($this, 'block_type_metadata_settings'), 10, 2);
 	}
 
 	function hook_content_filters() {
@@ -127,6 +131,21 @@ class Advanced_Excerpt {
 	function admin_init() {
 		add_action( 'admin_menu', array( $this, 'add_pages' ) );
 		add_filter( 'plugin_action_links_' . $this->plugin_basename, array( $this, 'plugin_action_links' ) );
+	}
+
+	public function block_type_metadata_settings($settings, $metadata) {
+		if ('core/post-excerpt' == $metadata['name'] && 1 == $this->options['the_excerpt']) {
+			$this->postExcerptRenderCallback = $settings['render_callback'];
+			$settings['render_callback'] = array($this, 'render_block_core_post_excerpt');
+		}
+
+		return $settings;
+	}
+
+	public function render_block_core_post_excerpt($attributes, $content, $block) {
+		// Disable trimming for post excerpt block
+		$attributes['excerptLength'] = null;
+		return call_user_func($this->postExcerptRenderCallback, $attributes, $content, $block);
 	}
 
 	function load_options() {
